@@ -9,6 +9,7 @@ interface VideoControlsProps {
   onMute: (e: React.MouseEvent) => void;
   onComment: () => void;
   onShare: () => void;
+  show?: boolean;
 }
 
 export const VideoControls = ({
@@ -20,7 +21,10 @@ export const VideoControls = ({
   onMute,
   onComment,
   onShare,
+  show = true,
 }: VideoControlsProps) => {
+  if (!show) return null;
+  
   return (
     <div className="absolute right-4 bottom-20 flex flex-col items-center gap-6">
       <button
