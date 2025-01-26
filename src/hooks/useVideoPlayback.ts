@@ -1,10 +1,7 @@
-import { useState, RefObject } from 'react';
+import { useState, useRef, RefObject } from 'react';
 
-interface UseVideoPlaybackProps {
-  videoRef: RefObject<HTMLVideoElement>;
-}
-
-export const useVideoPlayback = ({ videoRef }: UseVideoPlaybackProps) => {
+export const useVideoPlayback = (inView: boolean) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
 
@@ -41,6 +38,7 @@ export const useVideoPlayback = ({ videoRef }: UseVideoPlaybackProps) => {
   };
 
   return {
+    videoRef,
     isPlaying,
     setIsPlaying,
     isMuted,
