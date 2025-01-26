@@ -10,6 +10,8 @@ export const useVideoRecommendations = (userId: string | undefined) => {
       if (!userId) return;
 
       try {
+        console.log('🎯 Fetching recommendations for user:', userId);
+        
         const { data: recs, error } = await supabase
           .rpc('get_recommended_videos', {
             user_id_input: userId
@@ -28,10 +30,12 @@ export const useVideoRecommendations = (userId: string | undefined) => {
           .single();
 
         if (userPrefs?.interests) {
+          console.log('👤 User Interests:', userPrefs.interests);
+
           // Fetch AI analysis for recommended videos
           const { data: videos } = await supabase
             .from('videos')
-            .select('id, ai_analysis')
+            .select('id, ai_analysis, title')
             .in('id', recs.map(r => r.video_id));
 
           // Adjust scores based on AI analysis matching user preferences
@@ -55,7 +59,16 @@ export const useVideoRecommendations = (userId: string | undefined) => {
                     topic.toLowerCase().includes(interest.toLowerCase())
                   )
                 );
-                aiScore = matchingInterests.length * 0.5; // Adjust weight as needed
+
+                aiScore = matchingInterests.length * 0.5;
+
+                console.log('🎥 Video Analysis:', {
+                  title: video.title,
+                  categories: analysis.categories,
+                  topics: analysis.topics,
+                  matchingInterests,
+                  aiScore
+                });
               } catch (e) {
                 console.error('Error parsing AI analysis:', e);
               }
@@ -67,10 +80,17 @@ export const useVideoRecommendations = (userId: string | undefined) => {
             };
           });
 
-          console.log('Received recommendations with AI analysis:', adjustedRecs?.length, 'videos');
+          console.log('🏆 Final Recommendation Scores:', 
+            adjustedRecs.map(rec => ({
+              video_id: rec.video_id,
+              baseScore: recs.find(r => r.video_id === rec.video_id)?.score.toFixed(2),
+              finalScore: rec.score.toFixed(2)
+            }))
+          );
+          
           setRecommendations(adjustedRecs || []);
         } else {
-          console.log('Received recommendations:', recs?.length, 'videos');
+          console.log('⚠️ No user preferences found - using base recommendations');
           setRecommendations(recs || []);
         }
       } catch (error) {
