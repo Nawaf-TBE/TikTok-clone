@@ -49,8 +49,12 @@ export const VideoFeed = () => {
       </div>
       <div className="h-[calc(100vh-80px)] overflow-y-scroll snap-y snap-mandatory">
         {videos.length > 0 ? (
-          videos.map((video) => (
-            <VideoPlayer key={video.id} {...video} />
+          videos.map((video: any) => (
+            <VideoPlayer 
+              key={video.id} 
+              {...video} 
+              _score={video._score} // Pass the recommendation score
+            />
           ))
         ) : (
           <VideoFeedEmpty />
