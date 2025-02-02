@@ -1,4 +1,4 @@
-# ClipCloud Journey
+# Tiktok-Clone
 
 A modern video-sharing platform built with React and Supabase.
 
